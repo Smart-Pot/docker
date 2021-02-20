@@ -1,0 +1,76 @@
+services:
+
+  traefik:
+    image: "traefik:v2.4"
+    networks: 
+      - traefik_net
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  
+  comment-service:
+    image: comment-service
+    restart: always
+    networks: 
+      - traefik_net
+      - database
+      - rabbitmq
+    depends_on: 
+      - auth-service
+      - mongodb
+      - rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=docker-test_traefik_net"
+      - "traefik.http.services.comment-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.comment-service.rule=Host(`comment.localhost`) && PathPrefix(`/comment`)"
+      - "traefik.http.routers.comment-service.middlewares=auth-service"
+      - "traefik.http.routers.comment-service.entrypoints=web"
+
+  auth-service:
+    image: auth-service
+    restart: always
+    networks:
+      - traefik_net
+      - database
+      - rabbitmq
+    depends_on:
+      - mongodb
+      - rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=docker-test_traefik_net"
+      - "traefik.http.middlewares.auth-service.forwardauth.address=http://auth-service:80/auth/"
+      - "traefik.http.middlewares.auth-service.forwardauth.authResponseHeaders=x-user-id"
+      - "traefik.http.middlewares.auth-service.forwardauth.authRequestHeaders=x-auth-token"
+      - "traefik.http.middlewares.auth-service.forwardauth.trustForwardHeader=true"
+      - "traefik.http.services.auth-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.auth-service.rule=Host(`auth.localhost`) && PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth-service.entrypoints=web"
+  
+  mongodb:
+    image: mongo
+    restart: always
+    networks:
+      - database
+  rabbitmq:
+    image: rabbitmq
+    networks: 
+    - rabbitmq
+      
+networks:
+  traefik_net:
+    driver: bridge
+  database:
+    driver: bridge
+  rabbitmq:
+    driver: bridge
