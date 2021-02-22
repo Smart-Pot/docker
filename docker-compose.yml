@@ -18,6 +18,9 @@ services:
 
   
   comment-service:
+    build: 
+      context: ..
+      dockerfile: ./Comment-Service/Dockerfile
     image: comment-service
     restart: always
     networks: 
@@ -36,7 +39,52 @@ services:
       - "traefik.http.routers.comment-service.middlewares=auth-service"
       - "traefik.http.routers.comment-service.entrypoints=web"
 
+  post-service:
+    build: 
+      context: ..
+      dockerfile: ./Post-Service/Dockerfile
+    image: post-service
+    restart: always
+    networks: 
+      - traefik_net
+      - database
+      - rabbitmq
+    depends_on: 
+      - auth-service
+      - mongo-config
+      - rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=docker_traefik_net"
+      - "traefik.http.services.post-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.post-service.rule=Host(`post.localhost`) && PathPrefix(`/post`)"
+      - "traefik.http.routers.post-service.middlewares=auth-service"
+      - "traefik.http.routers.post-service.entrypoints=web"
+
+  search-service:
+    build: 
+      context: ..
+      dockerfile: ./Search-Service/Dockerfile
+    image: search-service
+    restart: always
+    networks: 
+      - traefik_net
+      - database
+    depends_on: 
+      - mongo-config
+      - elasticsearch
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=docker_traefik_net"
+      - "traefik.http.services.search-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.search-service.rule=Host(`search.localhost`) && PathPrefix(`/search`)"
+      - "traefik.http.routers.search-service.middlewares=auth-service"
+      - "traefik.http.routers.search-service.entrypoints=web"
+
   auth-service:
+    build: 
+      context: ..
+      dockerfile: ./Authentication-Service/Dockerfile
     image: auth-service
     restart: always
     networks:
@@ -59,31 +107,31 @@ services:
 
   mongodb:
     image: mongo
-    command: mongod --replSet  rs0 --dbpath ./data/db --oplogSize 16 
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
     networks: 
       - database
     volumes:
-      - ./mongo/data1/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+      - ./mongo/data1/db:/data/db
       - ./mongo/data1/configdb:/data/configdb
     restart: always
 
   mongo2:
     image: mongo
-    command: mongod --replSet  rs0 --dbpath ./data/db --oplogSize 16 
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
     networks: 
       - database
     volumes:
-      - ./mongo/data2/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+      - ./mongo/data2/db:/data/db 
       - ./mongo/data2/configdb:/data/configdb
     restart: always
 
   mongo3:
     image: mongo
-    command: mongod --replSet rs0 --dbpath ./data/db  --oplogSize 16 
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
     networks:
       - database
     volumes:
-      - ./mongo/data3/db:/data/db # This is where your volume will persist. e.g. VOLUME-DIR = ./volumes/mongodb
+      - ./mongo/data3/db:/data/db 
       - ./mongo/data3/configdb:/data/configdb
     restart: always
 
@@ -98,6 +146,42 @@ services:
     volumes:
       - ./scripts:/scripts
     entrypoint: ['/scripts/setup.sh']
+  
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    networks:
+      - database
+    ports: 
+      - 9200:9200
+    environment: 
+      - discovery.type=single-node
+    volumes:
+      - ./elasticsearch/logging.yml:/etc/elasticsearch/logging.yml
+    depends_on:
+      - mongo-config
+    restart: always
+  
+  elastic-config:
+    image: python
+    depends_on:
+      - elasticsearch
+    networks:
+      - database
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ['/scripts/elastic-setup.sh']
+    
+  mongo-connector:
+    image: python
+    networks:
+      - database
+    depends_on:
+      - elasticsearch
+      - mongodb
+    volumes:
+      - ./mongo-connector:/var/
+    entrypoint: ["var/scripts/mongo-connector.sh"]
+    
 
   rabbitmq:
     image: rabbitmq
