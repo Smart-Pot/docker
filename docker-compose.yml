@@ -1,5 +1,35 @@
 services:
 
+  mongodb:
+    image: mongo
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    networks: 
+      - database
+    volumes:
+      - ./mongo/data1/db:/data/db
+      - ./mongo/data1/configdb:/data/configdb
+    restart: always
+
+  mongo2:
+    image: mongo
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    networks: 
+      - database
+    volumes:
+      - ./mongo/data2/db:/data/db 
+      - ./mongo/data2/configdb:/data/configdb
+    restart: always
+
+  mongo3:
+    image: mongo
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    networks:
+      - database
+    volumes:
+      - ./mongo/data3/db:/data/db 
+      - ./mongo/data3/configdb:/data/configdb
+    restart: always
+
   traefik:
     image: "traefik:v2.4"
     networks: 
@@ -39,6 +69,7 @@ services:
       - "traefik.http.routers.comment-service.middlewares=auth-service"
       - "traefik.http.routers.comment-service.entrypoints=web"
 
+
   post-service:
     build: 
       context: ..
@@ -61,6 +92,7 @@ services:
       - "traefik.http.routers.post-service.middlewares=auth-service"
       - "traefik.http.routers.post-service.entrypoints=web"
 
+
   search-service:
     build: 
       context: ..
@@ -80,6 +112,7 @@ services:
       - "traefik.http.routers.search-service.rule=Host(`search.localhost`) && PathPrefix(`/search`)"
       - "traefik.http.routers.search-service.middlewares=auth-service"
       - "traefik.http.routers.search-service.entrypoints=web"
+
 
   auth-service:
     build: 
@@ -105,35 +138,7 @@ services:
       - "traefik.http.routers.auth-service.rule=Host(`auth.localhost`) && PathPrefix(`/auth`)"
       - "traefik.http.routers.auth-service.entrypoints=web"
 
-  mongodb:
-    image: mongo
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    networks: 
-      - database
-    volumes:
-      - ./mongo/data1/db:/data/db
-      - ./mongo/data1/configdb:/data/configdb
-    restart: always
 
-  mongo2:
-    image: mongo
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    networks: 
-      - database
-    volumes:
-      - ./mongo/data2/db:/data/db 
-      - ./mongo/data2/configdb:/data/configdb
-    restart: always
-
-  mongo3:
-    image: mongo
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    networks:
-      - database
-    volumes:
-      - ./mongo/data3/db:/data/db 
-      - ./mongo/data3/configdb:/data/configdb
-    restart: always
 
   mongo-config:
     image: mongo
@@ -145,6 +150,8 @@ services:
       - database
     volumes:
       - ./scripts:/scripts
+    environment: 
+      - SLEEP_TIME=30
     entrypoint: ['/scripts/setup.sh']
   
   elasticsearch:
@@ -169,6 +176,8 @@ services:
       - database
     volumes:
       - ./scripts:/scripts
+    environment: 
+      - SLEEP_TIME=60
     entrypoint: ['/scripts/elastic-setup.sh']
     
   mongo-connector:
@@ -180,6 +189,8 @@ services:
       - mongodb
     volumes:
       - ./mongo-connector:/var/
+    environment: 
+      - SLEEP_TIME=60
     entrypoint: ["var/scripts/mongo-connector.sh"]
     
 

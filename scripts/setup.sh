@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Sleeping for ${SLEEP_TIME} second..."
+sleep ${SLEEP_TIME};
 
 mongodb1=$(getent hosts mongodb | awk '{ print $1 }')
 mongodb2=$(getent hosts mongo2 | awk '{ print $1 }')

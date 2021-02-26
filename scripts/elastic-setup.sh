@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Sleeping for ${SLEEP_TIME} second..."
+sleep ${SLEEP_TIME};
 
 elastic=$(getent hosts elasticsearch | awk '{ print $1 }')
 

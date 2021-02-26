@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Sleeping for ${SLEEP_TIME} second..."
+sleep ${SLEEP_TIME};
 
 MONGO=$(getent hosts mongodb | awk '{ print $1 }')
 ELASTIC=$(getent hosts elasticsearch | awk '{ print $1 }')
