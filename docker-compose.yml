@@ -113,6 +113,16 @@ services:
       - "traefik.http.routers.search-service.middlewares=auth-service"
       - "traefik.http.routers.search-service.entrypoints=web"
 
+  notification-service:
+    build: 
+      context: ..
+      dockerfile: ./Notification-Service/Dockerfile
+    image: notification-service
+    restart: always
+    networks: 
+      - rabbitmq
+    depends_on: 
+      - rabbitmq
 
   auth-service:
     build: 
@@ -137,6 +147,28 @@ services:
       - "traefik.http.services.auth-service.loadbalancer.server.port=80"
       - "traefik.http.routers.auth-service.rule=Host(`auth.localhost`) && PathPrefix(`/auth`)"
       - "traefik.http.routers.auth-service.entrypoints=web"
+
+  user-service:
+    build: 
+      context: ..
+      dockerfile: ./User-Service/Dockerfile
+    image: user-service
+    restart: always
+    networks: 
+      - rabbitmq
+      - traefik_net
+      - database
+    depends_on: 
+      - auth-service
+      - rabbitmq
+      - mongo-config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=docker_traefik_net"
+      - "traefik.http.services.user-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.user-service.rule=Host(`user.localhost`) && PathPrefix(`/user`)"
+      - "traefik.http.routers.user-service.middlewares=auth-service"
+      - "traefik.http.routers.user-service.entrypoints=web"
 
 
 
