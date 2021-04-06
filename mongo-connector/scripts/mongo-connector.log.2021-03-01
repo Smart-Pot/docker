@@ -1,0 +1,16 @@
+2021-03-01 13:41:11,045 [ALWAYS] mongo_connector.connector:50 - Starting mongo-connector version: 3.1.1
+2021-03-01 13:41:11,045 [ALWAYS] mongo_connector.connector:50 - Python version: 3.9.2 (default, Feb 19 2021, 17:11:58) 
+[GCC 8.3.0]
+2021-03-01 13:41:11,047 [ALWAYS] mongo_connector.connector:50 - Platform: Linux-5.4.72-microsoft-standard-WSL2-x86_64-with-glibc2.28
+2021-03-01 13:41:11,048 [ALWAYS] mongo_connector.connector:50 - pymongo version: 3.11.3
+2021-03-01 13:41:11,049 [WARNING] mongo_connector.connector:170 - MongoConnector: Can't find /oplog.timestamp, attempting to create an empty progress log
+2021-03-01 13:41:11,055 [ALWAYS] mongo_connector.connector:50 - Source MongoDB version: 4.4.3
+2021-03-01 13:41:11,055 [ALWAYS] mongo_connector.connector:50 - Target DocManager: mongo_connector.doc_managers.elastic2_doc_manager version: 1.0.0
+2021-03-01 13:41:11,057 [ERROR] mongo_connector.connector:381 - No replica set at "172.19.0.3:27017"! A replica set is required to run mongo-connector. Shutting down...
+2021-03-01 13:42:25,830 [ALWAYS] mongo_connector.connector:50 - Starting mongo-connector version: 3.1.1
+2021-03-01 13:42:25,830 [ALWAYS] mongo_connector.connector:50 - Python version: 3.9.2 (default, Feb 19 2021, 17:11:58) 
+[GCC 8.3.0]
+2021-03-01 13:42:25,832 [ALWAYS] mongo_connector.connector:50 - Platform: Linux-5.4.72-microsoft-standard-WSL2-x86_64-with-glibc2.28
+2021-03-01 13:42:25,833 [ALWAYS] mongo_connector.connector:50 - pymongo version: 3.11.3
+2021-03-01 13:42:25,840 [ALWAYS] mongo_connector.connector:50 - Source MongoDB version: 4.4.3
+2021-03-01 13:42:25,841 [ALWAYS] mongo_connector.connector:50 - Target DocManager: mongo_connector.doc_managers.elastic2_doc_manager version: 1.0.0
