@@ -66,7 +66,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=docker_traefik_net"
       - "traefik.http.services.comment-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.comment-service.rule=Host(`comment.localhost`) && PathPrefix(`/comment`)"
+      - "traefik.http.routers.comment-service.rule=Host(`localhost`) && PathPrefix(`/comment`)"
       - "traefik.http.routers.comment-service.middlewares=auth-service"
       - "traefik.http.routers.comment-service.entrypoints=web"
 
@@ -89,7 +89,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=docker_traefik_net"
       - "traefik.http.services.post-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.post-service.rule=Host(`post.localhost`) && PathPrefix(`/post`)"
+      - "traefik.http.routers.post-service.rule=Host(`localhost`) && PathPrefix(`/post`)"
       - "traefik.http.routers.post-service.middlewares=auth-service"
       - "traefik.http.routers.post-service.entrypoints=web"
 
@@ -110,7 +110,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=docker_traefik_net"
       - "traefik.http.services.search-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.search-service.rule=Host(`search.localhost`) && PathPrefix(`/search`)"
+      - "traefik.http.routers.search-service.rule=Host(`localhost`) && PathPrefix(`/search`)"
       - "traefik.http.routers.search-service.middlewares=auth-service"
       - "traefik.http.routers.search-service.entrypoints=web"
 
@@ -146,7 +146,7 @@ services:
       - "traefik.http.middlewares.auth-service.forwardauth.authRequestHeaders=x-auth-token"
       - "traefik.http.middlewares.auth-service.forwardauth.trustForwardHeader=true"
       - "traefik.http.services.auth-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.auth-service.rule=Host(`auth.localhost`) && PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth-service.rule=Host(`localhost`) && PathPrefix(`/auth`)"
       - "traefik.http.routers.auth-service.entrypoints=web"
 
   user-service:
@@ -167,7 +167,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=docker_traefik_net"
       - "traefik.http.services.user-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.user-service.rule=Host(`user.localhost`) && PathPrefix(`/user`)"
+      - "traefik.http.routers.user-service.rule=Host(`localhost`) && PathPrefix(`/user`)"
       - "traefik.http.routers.user-service.middlewares=auth-service"
       - "traefik.http.routers.user-service.entrypoints=web"
 
