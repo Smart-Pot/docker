@@ -188,6 +188,8 @@ services:
       - "traefik.http.routers.upload-service.rule=Host(`35.223.107.147`) && PathPrefix(`/upload`)"
       - "traefik.http.routers.upload-service.middlewares=auth-service"
       - "traefik.http.routers.upload-service.entrypoints=web"
+    volumes: 
+      - "/upload:/upload"
 
 
 
